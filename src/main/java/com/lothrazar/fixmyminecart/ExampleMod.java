@@ -1,5 +1,6 @@
 package com.lothrazar.fixmyminecart;
 
+import com.lothrazar.fixmyminecart.carts.MinecartRenderer;
 import net.minecraft.block.Blocks;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;

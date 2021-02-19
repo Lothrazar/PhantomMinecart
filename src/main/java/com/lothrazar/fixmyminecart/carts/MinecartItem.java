@@ -1,4 +1,4 @@
-package com.lothrazar.fixmyminecart;
+package com.lothrazar.fixmyminecart.carts;
 
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
@@ -37,9 +37,7 @@ public class MinecartItem extends Item {
         cart.setCustomName(itemstack.getDisplayName());
       }
       world.addEntity(cart);
-      ExampleMod.LOGGER.info("spawned " + cart);
     }
-    itemstack.shrink(1);
-    return ActionResultType.func_233537_a_(world.isRemote);
+    return ActionResultType.CONSUME;
   }
 }

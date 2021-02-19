@@ -1,5 +1,7 @@
 package com.lothrazar.fixmyminecart;
 
+import com.lothrazar.fixmyminecart.carts.MinecartItem;
+import com.lothrazar.fixmyminecart.carts.ReinforcedMinecart;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;

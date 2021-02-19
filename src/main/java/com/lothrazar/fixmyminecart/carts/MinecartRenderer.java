@@ -1,4 +1,4 @@
-package com.lothrazar.fixmyminecart;
+package com.lothrazar.fixmyminecart.carts;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
@@ -18,7 +18,6 @@ import net.minecraft.util.math.vector.Vector3f;
 
 public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRenderer<T> {
 
-  private static final ResourceLocation CACTICART = new ResourceLocation(ExampleMod.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
   protected final EntityModel<T> modelMinecart = new MinecartModel<>();
 
   public MinecartRenderer(EntityRendererManager renderManagerIn) {
@@ -28,7 +27,7 @@ public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRender
 
   @Override
   public ResourceLocation getEntityTexture(ReinforcedMinecart entity) {
-    return CACTICART;
+    return entity.type.getTexture();
   }
 
   @Override
@@ -44,7 +43,6 @@ public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRender
     double d0 = MathHelper.lerp(partialTicks, entityIn.lastTickPosX, entityIn.getPosX());
     double d1 = MathHelper.lerp(partialTicks, entityIn.lastTickPosY, entityIn.getPosY());
     double d2 = MathHelper.lerp(partialTicks, entityIn.lastTickPosZ, entityIn.getPosZ());
-    double d3 = 0.3F;
     Vector3d vector3d = entityIn.getPos(d0, d1, d2);
     float f3 = MathHelper.lerp(partialTicks, entityIn.prevRotationPitch, entityIn.rotationPitch);
     if (vector3d != null) {
@@ -79,7 +77,6 @@ public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRender
     BlockState blockstate = entityIn.getDisplayTile();
     if (blockstate.getRenderType() != BlockRenderType.INVISIBLE) {
       matrixStackIn.push();
-      float f4 = 0.75F;
       matrixStackIn.scale(0.75F, 0.75F, 0.75F);
       matrixStackIn.translate(-0.5D, (j - 8) / 16.0F, 0.5D);
       matrixStackIn.rotate(Vector3f.YP.rotationDegrees(90.0F));
@@ -93,6 +90,7 @@ public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRender
     matrixStackIn.pop();
   }
 
+  @SuppressWarnings("deprecation")
   protected void renderBlockState(T entityIn, float partialTicks, BlockState stateIn, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
     Minecraft.getInstance().getBlockRendererDispatcher().renderBlock(stateIn, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY);
   }
