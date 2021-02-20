@@ -39,7 +39,10 @@ public class MinecartItem extends Item {
         cart.setCustomName(itemstack.getDisplayName());
       }
       world.addEntity(cart);
+      //well thats useless. consume doesnt consume the item 
+      itemstack.shrink(1);
+      return ActionResultType.CONSUME;
     }
-    return ActionResultType.CONSUME;
+    return ActionResultType.PASS;
   }
 }
