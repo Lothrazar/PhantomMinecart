@@ -1,5 +1,6 @@
 package com.lothrazar.fixmyminecart.carts;
 
+import com.lothrazar.fixmyminecart.ModMain;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.block.BlockRenderType;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.vector.Vector3f;
 
 public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRenderer<T> {
 
+  private static final ResourceLocation CART = new ResourceLocation(ModMain.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
   protected final EntityModel<T> modelMinecart = new MinecartModel<>();
 
   public MinecartRenderer(EntityRendererManager renderManagerIn) {
@@ -27,7 +29,7 @@ public class MinecartRenderer<T extends ReinforcedMinecart> extends EntityRender
 
   @Override
   public ResourceLocation getEntityTexture(ReinforcedMinecart entity) {
-    return entity.type.getTexture();
+    return CART;
   }
 
   @Override

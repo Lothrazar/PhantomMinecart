@@ -1,6 +1,6 @@
 package com.lothrazar.fixmyminecart.carts;
 
-import com.lothrazar.fixmyminecart.ExampleRegistry;
+import com.lothrazar.fixmyminecart.CartRegistry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
@@ -16,18 +16,17 @@ import net.minecraftforge.fml.network.NetworkHooks;
 public class ReinforcedMinecart extends AbstractMinecartEntity {
 
   public static final String ID = "reinforced_minecart";
-  public CartType type = CartType.SPEED;
 
   public ReinforcedMinecart(EntityType<?> type, World worldIn) {
     super(type, worldIn);
   }
 
   public ReinforcedMinecart(World worldIn, double x, double y, double z) {
-    super(ExampleRegistry.E_REINFORCED_MINECART.get(), worldIn, x, y, z);
+    super(CartRegistry.E_REINFORCED_MINECART.get(), worldIn, x, y, z);
   }
 
   public ReinforcedMinecart(FMLPlayMessages.SpawnEntity spawnEntity, World worldIn) {
-    this(ExampleRegistry.E_REINFORCED_MINECART.get(), worldIn);
+    this(CartRegistry.E_REINFORCED_MINECART.get(), worldIn);
   }
 
   @Override
@@ -37,7 +36,30 @@ public class ReinforcedMinecart extends AbstractMinecartEntity {
 
   @Override
   public ItemStack getCartItem() {
-    return new ItemStack(ExampleRegistry.I_REINFORCED_MINECART.get());
+    return new ItemStack(CartRegistry.I_REINFORCED_MINECART.get());
+  }
+
+  @Override
+  public boolean canCollide(Entity entityIn) {
+    if (this.isPassenger(entityIn)) {
+      return true;
+    }
+    return false;
+    //    return BoatEntity.func_242378_a(this, entityIn);
+  }
+
+  @Override
+  public boolean canBePushed() {
+    //    ModMain.LOGGER.info("can super.canBePushed()? " + super.canBePushed());
+    return super.canBePushed();
+  }
+
+  @Override
+  public void applyEntityCollision(Entity entityIn) {
+    if (this.isPassenger(entityIn)) {
+      super.applyEntityCollision(entityIn);
+      return;
+    }
   }
 
   @Override
@@ -71,11 +93,6 @@ public class ReinforcedMinecart extends AbstractMinecartEntity {
       }
     }
   }
-  //  public static AttributeModifierMap.MutableAttribute func_234226_m_() {
-  //    return MobEntity.func_233666_p_()
-  //        .createMutableAttribute(Attributes.MAX_HEALTH, 4.0D)
-  //        .createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.2F);
-  //  }
 
   @Override
   public boolean hasDisplayTile() {
@@ -84,22 +101,14 @@ public class ReinforcedMinecart extends AbstractMinecartEntity {
 
   @Override
   protected float getSpeedFactor() {
-    return super.getSpeedFactor() * type.getSpeed();
+    if (!this.isBeingRidden()) {
+      return super.getSpeedFactor();
+    }
+    return super.getSpeedFactor() * 1.4F;
   }
 
   @Override
   public boolean canBeRidden() {
     return true;
-  }
-
-  @Override
-  public void tick() {
-    super.tick();
-    if (!this.world.isRemote) {
-      // // //
-      if (this.isBeingRidden()) {
-        Entity entity = this.getPassengers().get(0);
-      }
-    }
   }
 }

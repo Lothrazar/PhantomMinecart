@@ -27,7 +27,9 @@ public class MinecartItem extends Item {
     }
     ItemStack itemstack = context.getItem();
     if (!world.isRemote) {
-      RailShape railshape = blockstate.getBlock() instanceof AbstractRailBlock ? ((AbstractRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null) : RailShape.NORTH_SOUTH;
+      RailShape railshape = blockstate.getBlock() instanceof AbstractRailBlock
+          ? ((AbstractRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
+          : RailShape.NORTH_SOUTH;
       double d0 = 0.0D;
       if (railshape.isAscending()) {
         d0 = 0.5D;
