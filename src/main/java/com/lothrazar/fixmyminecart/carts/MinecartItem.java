@@ -1,15 +1,15 @@
 package com.lothrazar.fixmyminecart.carts;
 
-import net.minecraft.block.AbstractRailBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.state.properties.RailShape;
+import net.minecraft.world.level.block.BaseRailBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.block.state.properties.RailShape;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 
 public class MinecartItem extends Item {
 
@@ -18,31 +18,31 @@ public class MinecartItem extends Item {
   }
 
   @Override
-  public ActionResultType onItemUse(ItemUseContext context) {
-    World world = context.getWorld();
-    BlockPos blockpos = context.getPos();
+  public InteractionResult useOn(UseOnContext context) {
+    Level world = context.getLevel();
+    BlockPos blockpos = context.getClickedPos();
     BlockState blockstate = world.getBlockState(blockpos);
-    if (!blockstate.isIn(BlockTags.RAILS)) {
-      return ActionResultType.FAIL;
+    if (!blockstate.is(BlockTags.RAILS)) {
+      return InteractionResult.FAIL;
     }
-    ItemStack itemstack = context.getItem();
-    if (!world.isRemote) {
-      RailShape railshape = blockstate.getBlock() instanceof AbstractRailBlock
-          ? ((AbstractRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
+    context.getPlayer().swing(context.getHand());
+    ItemStack itemstack = context.getItemInHand();
+    if (!world.isClientSide) {
+      RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock
+          ? ((BaseRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
           : RailShape.NORTH_SOUTH;
       double d0 = 0.0D;
       if (railshape.isAscending()) {
         d0 = 0.5D;
       }
       ReinforcedMinecart cart = new ReinforcedMinecart(world, blockpos.getX() + 0.5D, blockpos.getY() + 0.0625D + d0, blockpos.getZ() + 0.5D);
-      if (itemstack.hasDisplayName()) {
-        cart.setCustomName(itemstack.getDisplayName());
+      if (itemstack.hasCustomHoverName()) {
+        cart.setCustomName(itemstack.getHoverName());
       }
-      world.addEntity(cart);
-      //well thats useless. consume doesnt consume the item 
+      world.addFreshEntity(cart);
       itemstack.shrink(1);
-      return ActionResultType.CONSUME;
+      return InteractionResult.CONSUME;
     }
-    return ActionResultType.PASS;
+    return InteractionResult.PASS;
   }
 }

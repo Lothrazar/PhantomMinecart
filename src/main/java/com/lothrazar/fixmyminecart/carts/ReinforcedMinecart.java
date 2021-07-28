@@ -1,31 +1,31 @@
 package com.lothrazar.fixmyminecart.carts;
 
 import com.lothrazar.fixmyminecart.CartRegistry;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.IPacket;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.FMLPlayMessages;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
-public class ReinforcedMinecart extends AbstractMinecartEntity {
+public class ReinforcedMinecart extends AbstractMinecart {
 
   public static final String ID = "reinforced_minecart";
 
-  public ReinforcedMinecart(EntityType<?> type, World worldIn) {
+  public ReinforcedMinecart(EntityType<?> type, Level worldIn) {
     super(type, worldIn);
   }
 
-  public ReinforcedMinecart(World worldIn, double x, double y, double z) {
+  public ReinforcedMinecart(Level worldIn, double x, double y, double z) {
     super(CartRegistry.E_REINFORCED_MINECART.get(), worldIn, x, y, z);
   }
 
-  public ReinforcedMinecart(FMLPlayMessages.SpawnEntity spawnEntity, World worldIn) {
+  public ReinforcedMinecart(FMLPlayMessages.SpawnEntity spawnEntity, Level worldIn) {
     this(CartRegistry.E_REINFORCED_MINECART.get(), worldIn);
   }
 
@@ -40,71 +40,71 @@ public class ReinforcedMinecart extends AbstractMinecartEntity {
   }
 
   @Override
-  public boolean canCollide(Entity entityIn) {
-    if (this.isPassenger(entityIn)) {
+  public boolean canCollideWith(Entity entityIn) {
+    if (this.hasPassenger(entityIn)) {
       return true;
     }
     return false;
-    //    return BoatEntity.func_242378_a(this, entityIn);
+    //    return BoatEntity.canVehicleCollide(this, entityIn);
   }
 
   @Override
-  public boolean canBePushed() {
+  public boolean isPushable() {
     //    ModMain.LOGGER.info("can super.canBePushed()? " + super.canBePushed());
-    return super.canBePushed();
+    return super.isPushable();
   }
 
   @Override
-  public void applyEntityCollision(Entity entityIn) {
-    if (this.isPassenger(entityIn)) {
-      super.applyEntityCollision(entityIn);
+  public void push(Entity entityIn) {
+    if (this.hasPassenger(entityIn)) {
+      super.push(entityIn);
       return;
     }
   }
 
   @Override
-  public IPacket<?> createSpawnPacket() {
+  public Packet<?> getAddEntityPacket() {
     return NetworkHooks.getEntitySpawningPacket(this);
   }
 
   @Override
-  public ActionResultType processInitialInteract(PlayerEntity player, Hand hand) {
-    ActionResultType ret = super.processInitialInteract(player, hand);
-    if (ret.isSuccessOrConsume() || player.isSecondaryUseActive() || this.isBeingRidden()) {
+  public InteractionResult interact(Player player, InteractionHand hand) {
+    InteractionResult ret = super.interact(player, hand);
+    if (ret.consumesAction() || player.isSecondaryUseActive() || this.isVehicle()) {
       return ret;
     }
     if (player.startRiding(this)) {
-      return ActionResultType.CONSUME;
+      return InteractionResult.CONSUME;
     }
     return ret;
   }
 
   @Override
-  public void onActivatorRailPass(int x, int y, int z, boolean receivingPower) {
+  public void activateMinecart(int x, int y, int z, boolean receivingPower) {
     if (receivingPower) {
-      if (this.isBeingRidden()) {
-        this.removePassengers();
+      if (this.isVehicle()) {
+        this.ejectPassengers();
       }
-      if (this.getRollingAmplitude() == 0) {
-        this.setRollingDirection(-this.getRollingDirection());
-        this.setRollingAmplitude(10);
+      if (this.getHurtTime() == 0) {
+        this.setHurtDir(-this.getHurtDir());
+        this.setHurtTime(10);
         this.setDamage(50.0F);
-        this.markVelocityChanged();
+        this.markHurt();
       }
     }
   }
 
   @Override
-  public boolean hasDisplayTile() {
+  public boolean hasCustomDisplay() {
     return false;
   }
 
   @Override
-  protected float getSpeedFactor() {
-    if (!this.isBeingRidden()) {
-      return super.getSpeedFactor();
+  protected float getBlockSpeedFactor() {
+    if (!this.isVehicle()) {
+      return super.getBlockSpeedFactor();
     }
-    return super.getSpeedFactor() * 1.4F;
+    return super.getBlockSpeedFactor() * 1.4F;
   }
 
   @Override
