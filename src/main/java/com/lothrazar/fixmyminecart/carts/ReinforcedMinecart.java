@@ -10,8 +10,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
 
 public class ReinforcedMinecart extends AbstractMinecart {
 
@@ -25,7 +25,7 @@ public class ReinforcedMinecart extends AbstractMinecart {
     super(CartRegistry.E_REINFORCED_MINECART.get(), worldIn, x, y, z);
   }
 
-  public ReinforcedMinecart(FMLPlayMessages.SpawnEntity spawnEntity, Level worldIn) {
+  public ReinforcedMinecart(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
     this(CartRegistry.E_REINFORCED_MINECART.get(), worldIn);
   }
 
