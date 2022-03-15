@@ -28,23 +28,12 @@ public class ModMain {
   public static final Logger LOGGER = LogManager.getLogger();
 
   public ModMain() {
-    ConfigManager.setup();
     FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
-    //
+
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     CartRegistry.ITEMS.register(eventBus);
     CartRegistry.ENTITIES.register(eventBus);
-   // MinecraftForge.EVENT_BUS.register(this);
   }
-
-  private void setupClient(final FMLClientSetupEvent event) {
-    //for client side only setup
-   // RenderingRegistry.registerEntityRenderingHandler(CartRegistry.E_REINFORCED_MINECART.get(), MinecartRenderer::new);
-  }
-
-
-
 
   private void setup(final FMLCommonSetupEvent event) {
     /**

@@ -10,14 +10,13 @@ public class ConfigManager {
 
   private static final ForgeConfigSpec.Builder CFG = new ForgeConfigSpec.Builder();
   private static ForgeConfigSpec COMMON_CONFIG;
-  public static BooleanValue TESTING;
+//  public static BooleanValue TESTING;
   static {
     initConfig();
   }
 
   private static void initConfig() {
     CFG.comment("General settings").push(ModMain.MODID);
-    TESTING = CFG.comment("Testing mixin spam log if holding filled map").define("serverTest", true);
     CFG.pop(); // one pop for every push
     COMMON_CONFIG = CFG.build();
   }
