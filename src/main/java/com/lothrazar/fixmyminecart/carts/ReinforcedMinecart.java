@@ -1,14 +1,15 @@
 package com.lothrazar.fixmyminecart.carts;
 
 import com.lothrazar.fixmyminecart.CartRegistry;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.AbstractMinecart;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
@@ -35,7 +36,12 @@ public class ReinforcedMinecart extends AbstractMinecart {
   }
 
   @Override
-  public ItemStack getCartItem() {
+  public Item getDropItem() {
+    return CartRegistry.I_REINFORCED_MINECART.get();
+  }
+
+  @Override
+  public ItemStack getPickResult() {
     return new ItemStack(CartRegistry.I_REINFORCED_MINECART.get());
   }
 

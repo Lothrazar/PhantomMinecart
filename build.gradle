@@ -1,16 +1,9 @@
-buildscript {
-    repositories {
-		maven { url = 'https://maven.minecraftforge.net' }    
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-    }
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '5.1.+'
 }
-apply plugin: 'net.minecraftforge.gradle'
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+import net.minecraftforge.gradle.common.tasks.SignJar
 
 version = "${mc_version}-${mod_version}"
 group = 'com.lothrazar.fixmyminecart' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
@@ -20,7 +13,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 
 minecraft {
-	mappings channel: 'official', version: '1.18.2'
+	mappings channel: 'official', version: '1.19'
  
  
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -173,13 +166,24 @@ publishing {
         }
     }
 }
+task signJar(type: SignJar, dependsOn: jar) {
 
+    // findProperty allows us to reference the property without it existing. 
+    // Using project.propName would cause the script to fail validation if 
+    // the property did not exist. 
+    keyStore = project.findProperty('keyStore')
+    alias = project.findProperty('keyStoreAlias')
+    storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
+}
 task copyJar(type: Copy) {
     from jar
     into "${dist_folder}"
 }
 
-build.finalizedBy copyJar
+//build.finalizedBy copyJar
 
 task cleanJar {
   delete 'build/libs'
