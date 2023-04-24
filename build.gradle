@@ -3,17 +3,18 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
 }
+
 import net.minecraftforge.gradle.common.tasks.SignJar
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 version = "${mc_version}-${mod_version}"
 group = 'com.lothrazar.fixmyminecart' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'fixmyminecart'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 
 minecraft {
-	mappings channel: 'official', version: '1.19'
+    mappings channel: 'official', version: "${mc_version}"
  
  
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
@@ -57,23 +58,6 @@ minecraft {
             }
         }
 
-        data {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
-
-            // Recommended logging level for the console
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'fixmyminecart', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                fixmyminecart {
-                    source sourceSets.main
-                }
-            }
-        }
     }
 }
 
@@ -83,21 +67,12 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
  
-    // fg.deobf("mezz.jei:${jei_version}")
-   // compile fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}")
- //   compileOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}:api")
- //   runtimeOnly fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
+    implementation fg.deobf("blank:flib-${mc_version}:${flib_version}")
+	
+	implementation fg.deobf("mezz.jei:jei-${mc_version}-forge:${jei_version}")
 
 
-//    implementation fg.deobf("curse.maven:crafttweaker-239197:3183630")
-//    implementation fg.deobf("curse.maven:jeitweaker-368718:3188099")
-//    implementation fg.deobf("curse.maven:cucumber-272335:3187116")
-//    implementation fg.deobf("curse.maven:mystical-agriculture-246640:3152061")
-    // fg.deobf("curse.maven:simple-storage-network-268495:3163007")
-    // fg.deobf("curse.maven:cyclic-239286:3188762")
-//    implementation fg.deobf("curse.maven:ctm-267602:3137659")
-//    implementation fg.deobf("curse.maven:refined-storage-243076:3157354")
-//    implementation fg.deobf("curse.maven:storage-drawers-223852:3180569")
+
     
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
@@ -106,6 +81,9 @@ dependencies {
 }
 
 repositories {
+  flatDir {
+      dir 'libs'
+  }
   maven {
     // location of the maven that hosts JEI files
     name = "Progwml6 maven"
@@ -121,7 +99,7 @@ repositories {
     url = 'https://maven.theillusivec4.top/'
   }
   maven { url = 'https://maven.blamejared.com' }    
-  //maven { url = 'https://www.cursemaven.com'  }
+  maven { url = 'https://www.cursemaven.com'  }
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -162,6 +140,10 @@ publishing {
         }
     }
 }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
 task signJar(type: SignJar, dependsOn: jar) {
 
     // findProperty allows us to reference the property without it existing. 
@@ -179,7 +161,6 @@ task copyJar(type: Copy) {
     into "${dist_folder}"
 }
 
-//build.finalizedBy copyJar
 
 task cleanJar {
   delete 'build/libs'

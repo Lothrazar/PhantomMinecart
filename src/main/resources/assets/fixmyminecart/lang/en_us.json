@@ -1,4 +1,6 @@
 {
 
-	"item.fixmyminecart.reinforced_minecart":"Phantom Minecart"
+	"item.fixmyminecart.reinforced_minecart":"Phantom Minecart",
+
+	"item.fixmyminecart.reinforced_minecart.tooltip":"Passes through other entities and carts; cannot be pushed"
 }

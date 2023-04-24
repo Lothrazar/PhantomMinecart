@@ -3,20 +3,20 @@ package com.lothrazar.fixmyminecart.carts;
 import com.lothrazar.fixmyminecart.ModMain;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.MinecartModel;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
 
 public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends EntityRenderer<T> {
 
@@ -67,15 +67,15 @@ public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends Entit
       }
     }
     matrixStackIn.translate(0.0D, 0.375D, 0.0D);
-    matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(180.0F - entityYaw));
-    matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(-f3));
+    matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
+    matrixStackIn.mulPose(Axis.ZP.rotationDegrees(-f3));
     float f5 = entityIn.getHurtTime() - partialTicks;
     float f6 = entityIn.getDamage() - partialTicks;
     if (f6 < 0.0F) {
       f6 = 0.0F;
     }
     if (f5 > 0.0F) {
-      matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * entityIn.getHurtDir()));
+      matrixStackIn.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * entityIn.getHurtDir()));
     }
     int j = entityIn.getDisplayOffset();
     BlockState blockstate = entityIn.getDisplayBlockState();
@@ -83,7 +83,7 @@ public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends Entit
       matrixStackIn.pushPose();
       matrixStackIn.scale(0.75F, 0.75F, 0.75F);
       matrixStackIn.translate(-0.5D, (j - 8) / 16.0F, 0.5D);
-      matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(90.0F));
+      matrixStackIn.mulPose(Axis.YP.rotationDegrees(90.0F));
       this.renderBlockState(entityIn, partialTicks, blockstate, matrixStackIn, bufferIn, packedLightIn);
       matrixStackIn.popPose();
     }
