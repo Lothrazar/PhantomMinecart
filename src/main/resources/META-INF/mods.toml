@@ -15,7 +15,7 @@ issueTrackerURL="https://github.com/Lothrazar/FixedMinecarts/issues" #optional
 # The modid of the mod
 modId="fixmyminecart" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-version="${file.jarVersion}" #mandatory
+version="${mod_version}" #mandatory
  # A display name for the mod
  
 displayName="fixmyminecart" #mandatory
@@ -51,12 +51,12 @@ Adds a better minecart by Lothrazar
 [[dependencies.fixmyminecart]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.19.4,)"
+    versionRange="[1.20.1,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.fixmyminecart]]
     modId="flib"
     mandatory=true
-    versionRange="[0.0.4,)"
+    versionRange="[0.0.5,)"
     ordering="NONE"
     side="BOTH"
