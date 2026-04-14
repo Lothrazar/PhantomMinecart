@@ -4,21 +4,21 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.lothrazar.fixmyminecart.carts.ReinforcedMinecart;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseRailBlock;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RailShape;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 
 @Mod(ModMain.MODID)
 public class ModMain {
@@ -26,11 +26,10 @@ public class ModMain {
   public static final String MODID = "fixmyminecart";
   public static final Logger LOGGER = LogManager.getLogger();
 
-  public ModMain() {
-    FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-    IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
-    CartRegistry.ITEMS.register(eventBus);
-    CartRegistry.ENTITIES.register(eventBus);
+  public ModMain(IEventBus modEventBus) {
+    modEventBus.addListener(this::setup);
+    CartRegistry.ITEMS.register(modEventBus);
+    CartRegistry.ENTITIES.register(modEventBus);
   }
 
   private void setup(final FMLCommonSetupEvent event) {
@@ -47,12 +46,13 @@ public class ModMain {
       @SuppressWarnings("deprecation")
       @Override
       public ItemStack execute(BlockSource source, ItemStack stack) {
-        Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-        Level world = source.getLevel();
-        double d0 = source.x() + direction.getStepX() * 1.125D;
-        double d1 = Math.floor(source.y()) + direction.getStepY();
-        double d2 = source.z() + direction.getStepZ() * 1.125D;
-        BlockPos blockpos = source.getPos().relative(direction);
+        Direction direction = source.state().getValue(DispenserBlock.FACING);
+        Level world = source.level();
+        var p = source.pos();
+        double d0 = p.getX() + direction.getStepX() * 1.125D;
+        double d1 = Math.floor(p.getY()) + direction.getStepY();
+        double d2 = p.getZ() + direction.getStepZ() * 1.125D;
+        BlockPos blockpos = source.pos().relative(direction);
         BlockState blockstate = world.getBlockState(blockpos);
         RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock
             ? ((BaseRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
@@ -82,7 +82,7 @@ public class ModMain {
           }
         }
         ReinforcedMinecart cart = new ReinforcedMinecart(world, d0, d1 + d3, d2);
-        if (stack.hasCustomHoverName()) {
+        if (stack.has(DataComponents.CUSTOM_NAME)) {
           cart.setCustomName(stack.getHoverName());
         }
         world.addFreshEntity(cart);
@@ -95,7 +95,7 @@ public class ModMain {
        */
       @Override
       protected void playSound(BlockSource source) {
-        source.getLevel().levelEvent(1000, source.getPos(), 0);
+        source.level().levelEvent(1000, source.pos(), 0);
       }
     };
     DispenserBlock.registerBehavior(CartRegistry.I_REINFORCED_MINECART.get(), dib);

@@ -2,6 +2,7 @@ package com.lothrazar.fixmyminecart.carts;
 
 import com.lothrazar.library.item.ItemFlib;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.ItemStack;
@@ -36,7 +37,7 @@ public class MinecartItem extends ItemFlib {
         d0 = 0.5D;
       }
       ReinforcedMinecart cart = new ReinforcedMinecart(world, blockpos.getX() + 0.5D, blockpos.getY() + 0.0625D + d0, blockpos.getZ() + 0.5D);
-      if (itemstack.hasCustomHoverName()) {
+      if (itemstack.has(DataComponents.CUSTOM_NAME)) { //  hasCustomHoverName()
         cart.setCustomName(itemstack.getHoverName());
       }
       world.addFreshEntity(cart);
