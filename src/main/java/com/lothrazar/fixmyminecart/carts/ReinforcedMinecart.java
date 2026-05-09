@@ -1,8 +1,6 @@
 package com.lothrazar.fixmyminecart.carts;
 
 import com.lothrazar.fixmyminecart.CartRegistry;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -12,8 +10,6 @@ import net.minecraft.world.entity.vehicle.AbstractMinecart;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.network.NetworkHooks;
-import net.minecraftforge.network.PlayMessages;
 
 public class ReinforcedMinecart extends AbstractMinecart {
 
@@ -25,10 +21,6 @@ public class ReinforcedMinecart extends AbstractMinecart {
 
   public ReinforcedMinecart(Level worldIn, double x, double y, double z) {
     super(CartRegistry.E_REINFORCED_MINECART.get(), worldIn, x, y, z);
-  }
-
-  public ReinforcedMinecart(PlayMessages.SpawnEntity spawnEntity, Level worldIn) {
-    this(CartRegistry.E_REINFORCED_MINECART.get(), worldIn);
   }
 
   @Override
@@ -67,11 +59,6 @@ public class ReinforcedMinecart extends AbstractMinecart {
       super.push(entityIn);
       return;
     }
-  }
-
-  @Override
-  public Packet<ClientGamePacketListener> getAddEntityPacket() {
-    return NetworkHooks.getEntitySpawningPacket(this);
   }
 
   @Override

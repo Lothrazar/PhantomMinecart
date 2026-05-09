@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends EntityRenderer<T> {
 
-  private static final ResourceLocation CART = new ResourceLocation(ModMain.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
+  private static final ResourceLocation CART = ResourceLocation.fromNamespaceAndPath(ModMain.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
   protected final EntityModel<T> modelMinecart;
 
   public PhantomMinecartRenderer(EntityRendererProvider.Context ctx) {
@@ -90,7 +90,7 @@ public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends Entit
     matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
     this.modelMinecart.setupAnim(entityIn, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
     VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.modelMinecart.renderType(this.getTextureLocation(entityIn)));
-    this.modelMinecart.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+    this.modelMinecart.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY);
     matrixStackIn.popPose();
   }
 
