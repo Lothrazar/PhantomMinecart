@@ -28,12 +28,12 @@ public class MinecartItem extends ItemFlib {
     }
     context.getPlayer().swing(context.getHand());
     ItemStack itemstack = context.getItemInHand();
-    if (!world.isClientSide) {
+    if (!world.isClientSide()) {
       RailShape railshape = blockstate.getBlock() instanceof BaseRailBlock
           ? ((BaseRailBlock) blockstate.getBlock()).getRailDirection(blockstate, world, blockpos, null)
           : RailShape.NORTH_SOUTH;
       double d0 = 0.0D;
-      if (railshape.isAscending()) {
+      if (railshape.isSlope()) {
         d0 = 0.5D;
       }
       ReinforcedMinecart cart = new ReinforcedMinecart(world, blockpos.getX() + 0.5D, blockpos.getY() + 0.0625D + d0, blockpos.getZ() + 0.5D);

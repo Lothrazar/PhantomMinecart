@@ -10,6 +10,8 @@ import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -41,7 +43,7 @@ public class CartRegistry {
   public static final DeferredHolder<Item, MinecartItem> I_REINFORCED_MINECART = ITEMS.register(ReinforcedMinecart.ID, () -> new MinecartItem(new Item.Properties()));
 
   private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> builder) {
-    return builder.build(id);
+    return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(ModMain.MODID, id)));
   }
 
 //  @SubscribeEvent
@@ -83,7 +85,7 @@ public class CartRegistry {
             : RailShape.NORTH_SOUTH;
         double d3;
         if (blockstate.is(BlockTags.RAILS)) {
-          if (railshape.isAscending()) {
+          if (railshape.isSlope()) {
             d3 = 0.6D;
           }
           else {
@@ -98,7 +100,7 @@ public class CartRegistry {
           RailShape railshape1 = blockstate1.getBlock() instanceof BaseRailBlock
               ? blockstate1.getValue(((BaseRailBlock) blockstate1.getBlock()).getShapeProperty())
               : RailShape.NORTH_SOUTH;
-          if (direction != Direction.DOWN && railshape1.isAscending()) {
+          if (direction != Direction.DOWN && railshape1.isSlope()) {
             d3 = -0.4D;
           }
           else {

@@ -2,100 +2,94 @@ package com.lothrazar.fixmyminecart.carts;
 
 import com.lothrazar.fixmyminecart.ModMain;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.MinecartModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.block.BlockModelRenderState;
+import net.minecraft.client.renderer.entity.AbstractMinecartRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.state.MinecartRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.block.RenderShape;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
-public class PhantomMinecartRenderer<T extends ReinforcedMinecart> extends EntityRenderer<T> {
+// AbstractMinecartRenderer#submit hardcodes vanilla's minecart texture with no override hook, so this
+// duplicates its logic (same as the pre-26.1 code duplicated vanilla's old render() logic by hand) to
+// swap in our own texture.
+public class PhantomMinecartRenderer extends AbstractMinecartRenderer<ReinforcedMinecart, MinecartRenderState> {
 
-  private static final ResourceLocation CART = ResourceLocation.fromNamespaceAndPath(ModMain.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
-  protected final EntityModel<T> modelMinecart;
+  private static final Identifier CART = Identifier.fromNamespaceAndPath(ModMain.MODID, "textures/entity/" + ReinforcedMinecart.ID + ".png");
 
   public PhantomMinecartRenderer(EntityRendererProvider.Context ctx) {
-    super(ctx);
-    modelMinecart = new MinecartModel<>(ctx.bakeLayer(ModelLayers.MINECART));
-    this.shadowRadius = 0.7F;
+    super(ctx, ModelLayers.MINECART);
   }
 
   @Override
-  public ResourceLocation getTextureLocation(ReinforcedMinecart entity) {
-    return CART;
+  public MinecartRenderState createRenderState() {
+    return new MinecartRenderState();
   }
 
   @Override
-  public void render(T entityIn, float entityYaw, float partialTicks, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-    super.render(entityIn, entityYaw, partialTicks, matrixStackIn, bufferIn, packedLightIn);
-    matrixStackIn.pushPose();
-    long i = entityIn.getId() * 493286711L;
-    i = i * i * 4392167121L + i * 98761L;
-    float f = (((i >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-    float f1 = (((i >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-    float f2 = (((i >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
-    matrixStackIn.translate(f, f1, f2);
-    double d0 = Mth.lerp(partialTicks, entityIn.xOld, entityIn.getX());
-    double d1 = Mth.lerp(partialTicks, entityIn.yOld, entityIn.getY());
-    double d2 = Mth.lerp(partialTicks, entityIn.zOld, entityIn.getZ());
-    Vec3 vector3d = entityIn.getPos(d0, d1, d2);
-    float f3 = Mth.lerp(partialTicks, entityIn.xRotO, entityIn.getXRot());
-    if (vector3d != null) {
-      Vec3 vector3d1 = entityIn.getPosOffs(d0, d1, d2, 0.3F);
-      Vec3 vector3d2 = entityIn.getPosOffs(d0, d1, d2, -0.3F);
-      if (vector3d1 == null) {
-        vector3d1 = vector3d;
-      }
-      if (vector3d2 == null) {
-        vector3d2 = vector3d;
-      }
-      matrixStackIn.translate(vector3d.x - d0, (vector3d1.y + vector3d2.y) / 2.0D - d1, vector3d.z - d2);
-      Vec3 vector3d3 = vector3d2.add(-vector3d1.x, -vector3d1.y, -vector3d1.z);
-      if (vector3d3.length() != 0.0D) {
-        vector3d3 = vector3d3.normalize();
-        entityYaw = (float) (Math.atan2(vector3d3.z, vector3d3.x) * 180.0D / Math.PI);
-        f3 = (float) (Math.atan(vector3d3.y) * 73.0D);
+  public void submit(MinecartRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
+    if (state.leashStates != null) {
+      for (var leashState : state.leashStates) {
+        submitNodeCollector.submitLeash(poseStack, leashState);
       }
     }
-    matrixStackIn.translate(0.0D, 0.375D, 0.0D);
-    matrixStackIn.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
-    matrixStackIn.mulPose(Axis.ZP.rotationDegrees(-f3));
-    float f5 = entityIn.getHurtTime() - partialTicks;
-    float f6 = entityIn.getDamage() - partialTicks;
-    if (f6 < 0.0F) {
-      f6 = 0.0F;
-    }
-    if (f5 > 0.0F) {
-      matrixStackIn.mulPose(Axis.XP.rotationDegrees(Mth.sin(f5) * f5 * f6 / 10.0F * entityIn.getHurtDir()));
-    }
-    int j = entityIn.getDisplayOffset();
-    BlockState blockstate = entityIn.getDisplayBlockState();
-    if (blockstate.getRenderShape() != RenderShape.INVISIBLE) {
-      matrixStackIn.pushPose();
-      matrixStackIn.scale(0.75F, 0.75F, 0.75F);
-      matrixStackIn.translate(-0.5D, (j - 8) / 16.0F, 0.5D);
-      matrixStackIn.mulPose(Axis.YP.rotationDegrees(90.0F));
-      this.renderBlockState(entityIn, partialTicks, blockstate, matrixStackIn, bufferIn, packedLightIn);
-      matrixStackIn.popPose();
-    }
-    matrixStackIn.scale(-1.0F, -1.0F, 1.0F);
-    this.modelMinecart.setupAnim(entityIn, 0.0F, 0.0F, -0.1F, 0.0F, 0.0F);
-    VertexConsumer ivertexbuilder = bufferIn.getBuffer(this.modelMinecart.renderType(this.getTextureLocation(entityIn)));
-    this.modelMinecart.renderToBuffer(matrixStackIn, ivertexbuilder, packedLightIn, OverlayTexture.NO_OVERLAY);
-    matrixStackIn.popPose();
-  }
+    this.submitNameDisplay(state, poseStack, submitNodeCollector, camera);
 
-  @SuppressWarnings("deprecation")
-  protected void renderBlockState(T entityIn, float partialTicks, BlockState stateIn, PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-    Minecraft.getInstance().getBlockRenderer().renderSingleBlock(stateIn, matrixStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY);
+    poseStack.pushPose();
+    long seed = state.offsetSeed;
+    float offsetX = (((float) (seed >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+    float offsetY = (((float) (seed >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+    float offsetZ = (((float) (seed >> 24 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
+    poseStack.translate(offsetX, offsetY, offsetZ);
+    if (state.isNewRender) {
+      poseStack.mulPose(Axis.YP.rotationDegrees(state.yRot));
+      poseStack.mulPose(Axis.ZP.rotationDegrees(-state.xRot));
+      poseStack.translate(0.0F, 0.375F, 0.0F);
+    }
+    else {
+      double entityX = state.x;
+      double entityY = state.y;
+      double entityZ = state.z;
+      float xRot = state.xRot;
+      float rotation = state.yRot;
+      if (state.posOnRail != null && state.frontPos != null && state.backPos != null) {
+        Vec3 frontPos = state.frontPos;
+        Vec3 backPos = state.backPos;
+        poseStack.translate(state.posOnRail.x - entityX, (frontPos.y + backPos.y) / 2.0 - entityY, state.posOnRail.z - entityZ);
+        Vec3 direction = backPos.add(-frontPos.x, -frontPos.y, -frontPos.z);
+        if (direction.length() != 0.0) {
+          direction = direction.normalize();
+          rotation = (float) (Math.atan2(direction.z, direction.x) * 180.0 / Math.PI);
+          xRot = (float) (Math.atan(direction.y) * 73.0);
+        }
+      }
+      poseStack.translate(0.0F, 0.375F, 0.0F);
+      poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - rotation));
+      poseStack.mulPose(Axis.ZP.rotationDegrees(-xRot));
+    }
+
+    float hurt = state.hurtTime;
+    if (hurt > 0.0F) {
+      poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(hurt) * hurt * state.damageTime / 10.0F * state.hurtDir));
+    }
+
+    BlockModelRenderState displayBlockModel = state.displayBlockModel;
+    if (!displayBlockModel.isEmpty()) {
+      poseStack.pushPose();
+      poseStack.scale(0.75F, 0.75F, 0.75F);
+      poseStack.translate(-0.5F, (state.displayOffset - 8) / 16.0F, 0.5F);
+      poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+      displayBlockModel.submit(poseStack, submitNodeCollector, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor);
+      poseStack.popPose();
+    }
+
+    poseStack.scale(-1.0F, -1.0F, 1.0F);
+    submitNodeCollector.submitModel(this.model, state, poseStack, CART, state.lightCoords, OverlayTexture.NO_OVERLAY, state.outlineColor, null);
+    poseStack.popPose();
   }
 }
