@@ -33,14 +33,14 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 //@EventBusSubscriber(modid = ModMain.MODID, bus = EventBusSubscriber.Bus.MOD)
 public class CartRegistry {
 
-  static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, ModMain.MODID);
+  static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(ModMain.MODID);
   static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, ModMain.MODID);
   // now for the content
   public static final DeferredHolder<EntityType<?>, EntityType<ReinforcedMinecart>> E_REINFORCED_MINECART = ENTITIES.register(ReinforcedMinecart.ID, () ->
   //actual sub register
   register(ReinforcedMinecart.ID, EntityType.Builder.<ReinforcedMinecart> of(ReinforcedMinecart::new, MobCategory.MISC)
       .sized(0.98F, 0.7F).clientTrackingRange(8)));
-  public static final DeferredHolder<Item, MinecartItem> I_REINFORCED_MINECART = ITEMS.register(ReinforcedMinecart.ID, () -> new MinecartItem(new Item.Properties()));
+  public static final DeferredHolder<Item, MinecartItem> I_REINFORCED_MINECART = ITEMS.registerItem(ReinforcedMinecart.ID, props -> new MinecartItem(props));
 
   private static <T extends Entity> EntityType<T> register(String id, EntityType.Builder<T> builder) {
     return builder.build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(ModMain.MODID, id)));

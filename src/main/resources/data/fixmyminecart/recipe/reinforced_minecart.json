@@ -5,12 +5,8 @@
     "###"
   ],
   "key": {
-    "#": {
-      "item": "minecraft:minecart"
-    },
-    "x": {
-      "item": "minecraft:diamond"
-    }
+    "#": "minecraft:minecart",
+    "x": "minecraft:diamond"
   },
   "result": {
     "id": "fixmyminecart:reinforced_minecart",
